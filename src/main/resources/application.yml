@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: projectmanager
+
+  # spring datasource configuration ???
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: 'rd'
+    password:
+    url: 'jdbc:h2:mem:project_manager'  # H2 ? JDBC URL, mem ???????, my_app ???????
+  h2:
+    console:
+      enabled: true  # ????? H2 ? console ?????????? table
+      path: '/h2' # ??? console ? URL ??
+  jpa:
+    generate-ddl: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: update  # ? spring boot entity ????, ????? DB scheam
