@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-public class Status extends BaseEntity {
+public class ProjectStatus extends BaseEntity {
     @Id
     @UuidGenerator
     @Column(updatable = false, nullable = false)
@@ -23,10 +23,10 @@ public class Status extends BaseEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "Status")
-    private List<Task> statuses;
+    @OneToMany(mappedBy = "projectStatus")
+    private List<ProjectTask> statuses;
 
     @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
+    @JoinColumn(name = "project_board_id")
+    private ProjectBoard projectBoard;
 }

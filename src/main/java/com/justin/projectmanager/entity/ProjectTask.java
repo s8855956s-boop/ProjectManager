@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-public class Task extends BaseEntity {
+public class ProjectTask extends BaseEntity {
     @Id
     @UuidGenerator
     @Column(updatable = false, nullable = false)
@@ -23,9 +23,9 @@ public class Task extends BaseEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
+    @JoinColumn(name = "project_status_id")
+    private ProjectStatus projectStatus;
 
-    @ManyToMany(mappedBy = "tasks")
+    @ManyToMany(mappedBy = "projectTasks")
     private Set<User> users;
 }
