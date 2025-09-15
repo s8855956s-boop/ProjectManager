@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Slf4j
@@ -40,9 +41,9 @@ public class ProjectBoardService {
     }
 
     public BoardResponse getBoardByUuid(UUID uuid) {
-        ProjectBoard projectBoard = repository.findById(uuid).orElseThrow();
+        BoardItem boardItem = repository.findBoardItemById(uuid).orElseThrow();
         BoardResponse boardResponse = new BoardResponse();
-        BeanUtils.copyProperties(projectBoard, boardResponse);
+        BeanUtils.copyProperties(boardItem, boardResponse);
         return boardResponse;
     }
 
@@ -57,6 +58,8 @@ public class ProjectBoardService {
     public void deleteBoard(UUID uuid) {
         if (repository.existsById(uuid)) {
             repository.deleteById(uuid);
+        } else {
+            throw new NoSuchElementException();
         }
     }
 

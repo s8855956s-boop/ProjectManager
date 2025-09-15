@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -58,6 +59,8 @@ public class ProjectTaskService {
     public void deleteStatus(UUID uuid) {
         if (repository.existsById(uuid)) {
             repository.deleteById(uuid);
+        } else {
+            throw new NoSuchElementException();
         }
     }
 

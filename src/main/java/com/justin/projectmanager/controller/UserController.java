@@ -25,10 +25,10 @@ public class UserController {
         return service.getAllUsers();
     }
 
-    @GetMapping("/{uuid}")
-    public UserResponse getUserByUuid(@PathVariable UUID uuid){
-        return service.getUserByUuid(uuid);
-    }
+//    @GetMapping("/{uuid}")
+//    public UserResponse getUserByUuid(@PathVariable UUID uuid){
+//        return service.getUserByUuid(uuid);
+//    }
 
     @PutMapping("/{uuid}")
     public void updateUserByUuid(@RequestBody UserRequest request, @PathVariable UUID uuid){

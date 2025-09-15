@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface UserItem {
     UUID getId();
-    String getName();
+    String getUsername();
 }

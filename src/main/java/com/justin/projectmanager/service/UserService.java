@@ -35,12 +35,12 @@ public class UserService {
         }).toList();
     }
 
-    public UserResponse getUserByUuid(UUID uuid) {
-        UserItem userItem = repository.findUserItemById(uuid).orElseThrow();
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(userItem, userResponse);
-        return userResponse;
-    }
+//    public UserResponse getUserByUuid(UUID uuid) {
+//        UserItem userItem = repository.findById(uuid).orElseThrow();
+//        UserResponse userResponse = new UserResponse();
+//        BeanUtils.copyProperties(userItem, userResponse);
+//        return userResponse;
+//    }
 
     public void updateUserByUuid(UserRequest request, UUID uuid) {
         User user = repository.findById(uuid).orElseThrow();

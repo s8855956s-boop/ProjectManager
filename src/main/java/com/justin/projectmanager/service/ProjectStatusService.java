@@ -9,11 +9,14 @@ import com.justin.projectmanager.repository.ProjectBoardRepository;
 import com.justin.projectmanager.repository.ProjectStatusRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Service
 public class ProjectStatusService {
     @Autowired
     private ProjectStatusRepository repository;
@@ -61,6 +64,8 @@ public class ProjectStatusService {
         ProjectBoard projectBoard = projectBoardRepository.findById(projectBoardId).orElseThrow();
         if (projectBoard.getProjectStatuses().stream().anyMatch(status -> uuid.equals(status.getId()))) {
             projectBoard.removeProjectStatus(uuid);
+        } else {
+            throw new NoSuchElementException();
         }
     }
 

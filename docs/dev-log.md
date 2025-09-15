@@ -2,6 +2,7 @@
 目錄
 - [2025-09-13](#2025-09-13)
 - [2025-09-14](#2025-09-14)
+- [2025-09-14](#2025-09-15)
 ## 2025-09-13
 - 初始化專案
 - 初始化Git
@@ -54,3 +55,8 @@ DELETE /tasks/{id} → 刪除
 
 父子關係：
 GET /boards/{boardId}/statuses
+---
+## 2025-09-15
+今天練習寫目前CRUD的Service的Test，並且發現我UserRepository原本寫的Projection
+Optional<User> findUserItemById(UUID id)會導致repository bean create不起來
+我先把這個function和有用到他的都先mark掉，不然ProjectmanagerApplicationTests不會過。
