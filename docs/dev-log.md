@@ -58,5 +58,21 @@ GET /boards/{boardId}/statuses
 ---
 ## 2025-09-15
 今天練習寫目前CRUD的Service的Test，並且發現我UserRepository原本寫的Projection
-Optional<User> findUserItemById(UUID id)會導致repository bean create不起來
+```JAVA
+Optional<User> findUserItemById(UUID id);
+```
+會導致repository bean create不起來
 我先把這個function和有用到他的都先mark掉，不然ProjectmanagerApplicationTests不會過。
+---
+## 2025-09-16
+今天把昨天的
+```JAVA
+Optional<User> findUserItemById(UUID id);
+```
+改成
+```JAVA
+Optional<UserItem> getUserItemById(@Param("id") UUID id);
+```
+就解決了repository bean create不起來的問題，應該是因為findAByB的A和B都要是Entity的欄位才行。
+改成getAByB的A就可以隨便取，並且上面那串也不會跟findById重覆到。
+今天把UserServiceTest補上，沒時間了，明天再看看下一步要做甚麼

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -35,12 +36,12 @@ public class UserService {
         }).toList();
     }
 
-//    public UserResponse getUserByUuid(UUID uuid) {
-//        UserItem userItem = repository.findById(uuid).orElseThrow();
-//        UserResponse userResponse = new UserResponse();
-//        BeanUtils.copyProperties(userItem, userResponse);
-//        return userResponse;
-//    }
+    public UserResponse getUserByUuid(UUID uuid) {
+        UserItem userItem = repository.getUserItemById(uuid).orElseThrow();
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(userItem, userResponse);
+        return userResponse;
+    }
 
     public void updateUserByUuid(UserRequest request, UUID uuid) {
         User user = repository.findById(uuid).orElseThrow();
@@ -53,6 +54,8 @@ public class UserService {
     public void deleteUser(UUID uuid) {
         if (repository.existsById(uuid)) {
             repository.deleteById(uuid);
+        } else {
+            throw new NoSuchElementException();
         }
     }
 

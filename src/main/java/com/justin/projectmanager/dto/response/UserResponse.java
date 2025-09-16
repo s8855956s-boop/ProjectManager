@@ -9,5 +9,5 @@ import java.util.UUID;
 @Setter
 public class UserResponse {
     private UUID id;
-    private String name;
+    private String username;
 }

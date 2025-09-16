@@ -15,6 +15,5 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     List<UserItem> findAllBy();
 
-//    @Query("SELECT new com.justin.projectmanager.dto.UserItem(u.id, u.name) FROM User u WHERE u.id = :id")
-//    Optional<UserItem> findUserItemById(@Param("id") UUID id);
+    Optional<UserItem> getUserItemById(@Param("id") UUID id);
 }

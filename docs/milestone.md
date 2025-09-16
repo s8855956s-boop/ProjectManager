@@ -5,7 +5,7 @@
 - [x] 使用 Spring Initializr 建立專案（Maven、Java 17、Spring Boot 3）
 - [x] 建立 GitHub repo，規劃好分支策略
 - [x] 設計資料庫 schema（至少一個主表 + 關聯子表）
-- [ ] 實作 Entity + Repository + 基本 CRUD API
+- [x] 實作 Entity + Repository + 基本 CRUD API
 
 🎯 成果：能新增/查詢/更新/刪除一個核心資料表（例如 Board + Status）
 
