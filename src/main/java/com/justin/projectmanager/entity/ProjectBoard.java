@@ -14,6 +14,7 @@ import java.util.UUID;
  * 專案看板
  */
 @Entity
+@Table(name = "PROJECT_BOARD")
 @Getter
 @Setter
 public class ProjectBoard extends BaseEntity {

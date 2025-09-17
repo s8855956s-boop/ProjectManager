@@ -2,12 +2,13 @@ package com.justin.projectmanager.service;
 
 import com.justin.projectmanager.dto.UserItem;
 import com.justin.projectmanager.dto.request.UserRequest;
+import com.justin.projectmanager.dto.response.TaskResponse;
 import com.justin.projectmanager.dto.response.UserResponse;
-import com.justin.projectmanager.entity.User;
+import com.justin.projectmanager.entity.AppUser;
+import com.justin.projectmanager.repository.ProjectTaskRepository;
 import com.justin.projectmanager.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,12 +21,15 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public void createUser(UserRequest request) {
-        User user = new User();
-        BeanUtils.copyProperties(request, user);
+    @Autowired
+    private ProjectTaskRepository projectTaskRepository;
 
-        setAuditFields(user, true);
-        repository.save(user);
+    public void createUser(UserRequest request) {
+        AppUser appUser = new AppUser();
+        BeanUtils.copyProperties(request, appUser);
+
+        setAuditFields(appUser, true);
+        repository.save(appUser);
     }
 
     public List<UserResponse> getAllUsers() {
@@ -44,11 +48,11 @@ public class UserService {
     }
 
     public void updateUserByUuid(UserRequest request, UUID uuid) {
-        User user = repository.findById(uuid).orElseThrow();
-        BeanUtils.copyProperties(request, user);
+        AppUser appUser = repository.findById(uuid).orElseThrow();
+        BeanUtils.copyProperties(request, appUser);
 
-        setAuditFields(user, false);
-        repository.save(user);
+        setAuditFields(appUser, false);
+        repository.save(appUser);
     }
 
     public void deleteUser(UUID uuid) {
@@ -59,13 +63,22 @@ public class UserService {
         }
     }
 
-    private void setAuditFields(User user, boolean isNew) {
+    public List<TaskResponse> getUserTasks(UUID uuid) {
+        return projectTaskRepository.findByAppUsers_Id(uuid).stream()
+                .map(item -> {
+                    TaskResponse taskResponse = new TaskResponse();
+                    BeanUtils.copyProperties(item, taskResponse);
+                    return taskResponse;
+                }).toList();
+    }
+
+    private void setAuditFields(AppUser appUser, boolean isNew) {
         LocalDateTime now = LocalDateTime.now();
         if (isNew) {
-            user.setCreateDate(now);
-            user.setCreateUser("NotSet");
+            appUser.setCreateDate(now);
+            appUser.setCreateUser("NotSet");
         }
-        user.setModifyDate(now);
-        user.setModifyUser("NotSet");
+        appUser.setModifyDate(now);
+        appUser.setModifyUser("NotSet");
     }
 }

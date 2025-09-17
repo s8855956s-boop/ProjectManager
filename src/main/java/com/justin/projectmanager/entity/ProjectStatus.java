@@ -13,6 +13,7 @@ import java.util.UUID;
  * 專案任務狀態
  */
 @Entity
+@Table(name = "PROJECT_STATUS")
 @Getter
 @Setter
 public class ProjectStatus extends BaseEntity {
@@ -24,7 +25,7 @@ public class ProjectStatus extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "projectStatus")
-    private List<ProjectTask> statuses;
+    private List<ProjectTask> tasks;
 
     @ManyToOne
     @JoinColumn(name = "project_board_id")

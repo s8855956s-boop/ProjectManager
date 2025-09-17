@@ -1,7 +1,6 @@
 package com.justin.projectmanager.service;
 
 import com.justin.projectmanager.dto.StatusItem;
-import com.justin.projectmanager.dto.request.BoardRequest;
 import com.justin.projectmanager.dto.request.StatusRequest;
 import com.justin.projectmanager.dto.response.StatusResponse;
 import com.justin.projectmanager.entity.ProjectBoard;
@@ -10,7 +9,6 @@ import com.justin.projectmanager.repository.ProjectBoardRepository;
 import com.justin.projectmanager.repository.ProjectStatusRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,7 +62,7 @@ public class ProjectStatusServiceTest {
         StatusItem statusItem = mock(StatusItem.class);
         when(statusItem.getId()).thenReturn(projectStatusId);
         when(statusItem.getName()).thenReturn("Test Status");
-        when(repository.findByProjectBoardId(projectBoardId)).thenReturn(List.of(statusItem));
+        when(repository.getStatusItemByProjectBoardId(projectBoardId)).thenReturn(List.of(statusItem));
 
         List<StatusResponse> responses = service.getStatusesByBoardId(projectBoardId);
 
@@ -77,27 +75,18 @@ public class ProjectStatusServiceTest {
         StatusRequest request = new StatusRequest();
         request.setName("New Name");
 
-        UUID projectStatusId   = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        UUID projectBoardId = UUID.fromString("22222222-2222-2222-2222-222222222222");
-
-        ProjectBoard projectBoard = new ProjectBoard();
+        UUID projectStatusId   = UUID.randomUUID();
 
         ProjectStatus projectStatus = new ProjectStatus();
         projectStatus.setId(projectStatusId);
         projectStatus.setName("Old Name");
 
-        projectBoard.setProjectStatuses(List.of(projectStatus));
+        when(repository.findById(projectStatusId)).thenReturn(Optional.of(projectStatus));
 
-        when(projectBoardRepository.findById(projectBoardId)).thenReturn(Optional.of(projectBoard));
+        service.updateStatus(request, projectStatusId);
+        verify(repository).save(projectStatus);
 
-        service.updateStatus(request, projectStatusId, projectBoardId);
-        verify(projectBoardRepository).save(projectBoard);
-        Optional<ProjectStatus> updatedProjectStatus = projectBoard.getProjectStatuses()
-                .stream()
-                .filter(status -> status.getId().equals(projectStatusId))
-                .findFirst();
-        String updatedName = updatedProjectStatus.map(ProjectStatus::getName)
-                        .orElse("");
+        String updatedName = projectStatus.getName() != null ? projectStatus.getName() : "";
         assertThat(updatedName).isEqualTo("New Name");
     }
 
@@ -106,42 +95,11 @@ public class ProjectStatusServiceTest {
         StatusRequest request = new StatusRequest();
         request.setName("New Name");
 
-        UUID projectStatusId   = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        UUID projectBoardId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+        UUID projectStatusId   = UUID.randomUUID();
 
-        ProjectBoard projectBoard = new ProjectBoard();
+        when(repository.findById(projectStatusId)).thenReturn(Optional.empty());
 
-        ProjectStatus projectStatus = new ProjectStatus();
-        projectStatus.setId(projectStatusId);
-        projectStatus.setName("Old Name");
-
-        projectBoard.setProjectStatuses(List.of(projectStatus));
-
-        when(projectBoardRepository.findById(projectBoardId)).thenReturn(Optional.empty());
-
-        assertThrows(Exception.class, () -> service.updateStatus(request, projectStatusId, projectBoardId));
-    }
-
-    @Test
-    void updateStatus_WhenNoMatchedStatus() {
-        StatusRequest request = new StatusRequest();
-        request.setName("New Name");
-
-        UUID projectStatusId   = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        UUID projectBoardId    = UUID.fromString("22222222-2222-2222-2222-222222222222");
-        UUID differentStatusId = UUID.fromString("33333333-3333-3333-3333-333333333333");
-
-        ProjectBoard projectBoard = new ProjectBoard();
-
-        ProjectStatus projectStatus = new ProjectStatus();
-        projectStatus.setId(differentStatusId);
-        projectStatus.setName("Old Name");
-
-        projectBoard.setProjectStatuses(List.of(projectStatus));
-
-        when(projectBoardRepository.findById(projectBoardId)).thenReturn(Optional.of(projectBoard));
-
-        assertThrows(Exception.class, () -> service.updateStatus(request, projectStatusId, projectBoardId));
+        assertThrows(Exception.class, () -> service.updateStatus(request, projectStatusId));
     }
 
     @Test

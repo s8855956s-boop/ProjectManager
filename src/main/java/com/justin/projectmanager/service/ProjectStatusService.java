@@ -7,6 +7,7 @@ import com.justin.projectmanager.entity.ProjectBoard;
 import com.justin.projectmanager.entity.ProjectStatus;
 import com.justin.projectmanager.repository.ProjectBoardRepository;
 import com.justin.projectmanager.repository.ProjectStatusRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ProjectStatusService {
     @Autowired
     private ProjectBoardRepository projectBoardRepository;
 
+    @Transactional
     public void createProjectStatus(StatusRequest request, UUID projectBoardId) {
         ProjectBoard projectBoard = projectBoardRepository.findById(projectBoardId).orElseThrow();
 
@@ -38,7 +40,7 @@ public class ProjectStatusService {
     }
 
     public List<StatusResponse> getStatusesByBoardId(UUID projectBoardId) {
-        List<StatusItem> statusItemList = repository.findByProjectBoardId(projectBoardId);
+        List<StatusItem> statusItemList = repository.getStatusItemByProjectBoardId(projectBoardId);
 
         //將Projection轉換為Response類別
         return statusItemList.stream().map(item -> {
@@ -48,18 +50,15 @@ public class ProjectStatusService {
         }).toList();
     }
 
-    public void updateStatus(StatusRequest request, UUID uuid, UUID projectBoardId) {
-        ProjectBoard projectBoard = projectBoardRepository.findById(projectBoardId).orElseThrow();
-
-        ProjectStatus projectStatus = projectBoard.getProjectStatuses().stream().filter(status -> {
-            return uuid.equals(status.getId());
-        }).findFirst().orElseThrow();
+    public void updateStatus(StatusRequest request, UUID uuid) {
+        ProjectStatus projectStatus = repository.findById(uuid).orElseThrow();
         projectStatus.setName(request.getName());
         setAuditFields(projectStatus, false);
 
-        projectBoardRepository.save(projectBoard);
+        repository.save(projectStatus);
     }
 
+    @Transactional
     public void deleteStatus(UUID uuid, UUID projectBoardId) {
         ProjectBoard projectBoard = projectBoardRepository.findById(projectBoardId).orElseThrow();
         if (projectBoard.getProjectStatuses().stream().anyMatch(status -> uuid.equals(status.getId()))) {

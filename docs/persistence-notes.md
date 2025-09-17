@@ -25,7 +25,7 @@
       user_id uuid not null,
       task_id uuid not null,
       primary key (user_id, task_id),
-      foreign key (user_id) references user(id),
+      foreign key (user_id) references appUser(id),
       foreign key (task_id) references task(id)
   );
   

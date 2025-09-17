@@ -8,11 +8,11 @@
   在目前資料夾建立一個新的 Git repository。  
   👉 開始追蹤這個專案的版本。
 
-- **`git config --global user.name "Kevin"`**  
+- **`git config --global appUser.name "Kevin"`**  
   設定 commit 時的作者名稱。  
   👉 `--global` 表示這台電腦所有專案都會用這個名稱。
 
-- **`git config --global user.email "kevincleim123@gmail.com"`**  
+- **`git config --global appUser.email "kevincleim123@gmail.com"`**  
   設定 commit 時的作者 email。  
   👉 通常使用 GitHub 綁定的 email，讓 commit 正確對應到 GitHub 帳號。
 

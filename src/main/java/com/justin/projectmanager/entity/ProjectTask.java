@@ -12,6 +12,7 @@ import java.util.UUID;
  * 專案任務
  */
 @Entity
+@Table(name = "PROJECT_TASK")
 @Getter
 @Setter
 public class ProjectTask extends BaseEntity {
@@ -27,5 +28,5 @@ public class ProjectTask extends BaseEntity {
     private ProjectStatus projectStatus;
 
     @ManyToMany(mappedBy = "projectTasks")
-    private Set<User> users;
+    private Set<AppUser> appUsers;
 }

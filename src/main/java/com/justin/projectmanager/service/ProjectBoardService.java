@@ -4,7 +4,10 @@ import com.justin.projectmanager.dto.BoardItem;
 import com.justin.projectmanager.dto.request.BoardRequest;
 import com.justin.projectmanager.dto.response.BoardResponse;
 import com.justin.projectmanager.entity.ProjectBoard;
+import com.justin.projectmanager.entity.ProjectStatus;
 import com.justin.projectmanager.repository.ProjectBoardRepository;
+import com.justin.projectmanager.repository.ProjectStatusRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,9 @@ import java.util.UUID;
 public class ProjectBoardService {
     @Autowired
     private ProjectBoardRepository repository;
+
+    @Autowired
+    ProjectStatusRepository projectStatusRepository;
 
     public void createProjectBoard(BoardRequest request) {
         ProjectBoard projectBoard = new ProjectBoard();
@@ -55,8 +61,12 @@ public class ProjectBoardService {
         repository.save(projectBoard);
     }
 
+    @Transactional
     public void deleteBoard(UUID uuid) {
         if (repository.existsById(uuid)) {
+            List<ProjectStatus> statuses = projectStatusRepository.findByProjectBoardId(uuid);
+            statuses.forEach(status -> status.getTasks().clear());
+
             repository.deleteById(uuid);
         } else {
             throw new NoSuchElementException();

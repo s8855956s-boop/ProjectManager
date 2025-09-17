@@ -21,7 +21,7 @@ Spring Initializer的介面很簡單，以下是我選擇的專案參數：
 
 #### Git 初始化
 - 在專案資料夾執行 `git init`，初始化 Git
-- 設定 Git identity（user.name 與 user.email）
+- 設定 Git identity（appUser.name 與 appUser.email）
 - 新增所有檔案並提交，訊息為 "Initial commit"
 - 連接遠端 GitHub repo 並推送到 main 分支
 - （詳細請見 [Git 初始化指令](./git-commands.md#git-初始化與常用指令說明)）
@@ -76,3 +76,14 @@ Optional<UserItem> getUserItemById(@Param("id") UUID id);
 就解決了repository bean create不起來的問題，應該是因為findAByB的A和B都要是Entity的欄位才行。
 改成getAByB的A就可以隨便取，並且上面那串也不會跟findById重覆到。
 今天把UserServiceTest補上，沒時間了，明天再看看下一步要做甚麼
+---
+## 2025-09-17
+今天把UserTest補上，也把ProjectStatus的update改成直接根據他的id修改，
+不需要從board抓出來改在塞回去存board。
+
+也加上了swagger，基本上就只要加依賴到pom檔就可以了，在Controller
+最上方可以加@Tag("這邊寫Controller說明)網頁上就會顯示出來。
+在API上面加上 @Operation(summary = "API功能", description = "詳細描述")也會顯示
+在網頁上，預設的網址是http://localhost:8080/swagger-ui/index.html
+
+今天也有建假資料，我現在用的是H2資料庫，是用Memory存資料的，在resources裡建一個data.sql他就會跑了

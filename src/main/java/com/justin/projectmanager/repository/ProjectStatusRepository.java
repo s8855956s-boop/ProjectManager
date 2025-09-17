@@ -10,5 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectStatusRepository extends JpaRepository<ProjectStatus, UUID> {
-    List<StatusItem> findByProjectBoardId(UUID projectBoardId);
+    List<StatusItem> getStatusItemByProjectBoardId(UUID projectBoardId);
+    List<ProjectStatus> findByProjectBoardId(UUID projectBoardId);
 }

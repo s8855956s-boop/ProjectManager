@@ -12,9 +12,10 @@ import java.util.UUID;
  * 使用者
  */
 @Entity
+@Table(name = "APP_USER")
 @Getter
 @Setter
-public class User extends BaseEntity {
+public class AppUser extends BaseEntity {
     @Id
     @UuidGenerator
     @Column(updatable = false, nullable = false)
@@ -25,7 +26,7 @@ public class User extends BaseEntity {
     @ManyToMany
     @JoinTable(
             name = "user_task", // 中介表名稱
-            joinColumns = @JoinColumn(name = "user_id"),  // 對應到 User
+            joinColumns = @JoinColumn(name = "user_id"),  // 對應到 AppUser
             inverseJoinColumns = @JoinColumn(name = "task_id") // 對應到 ProjectTask
     )
     private Set<ProjectTask> projectTasks;

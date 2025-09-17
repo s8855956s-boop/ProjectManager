@@ -3,7 +3,7 @@ package com.justin.projectmanager.service;
 import com.justin.projectmanager.dto.UserItem;
 import com.justin.projectmanager.dto.request.UserRequest;
 import com.justin.projectmanager.dto.response.UserResponse;
-import com.justin.projectmanager.entity.User;
+import com.justin.projectmanager.entity.AppUser;
 import com.justin.projectmanager.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class AppUserServiceTest {
     @Mock
     private UserRepository repository;
 
@@ -32,28 +32,28 @@ class UserServiceTest {
     @Test
     void createUser() {
         UserRequest request = new UserRequest();
-        request.setUsername("Test User");
+        request.setUsername("Test AppUser");
 
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<AppUser> captor = ArgumentCaptor.forClass(AppUser.class);
 
         service.createUser(request);
 
         verify(repository).save(captor.capture());
 
-        assertThat(captor.getValue().getUsername()).isEqualTo("Test User");
+        assertThat(captor.getValue().getUsername()).isEqualTo("Test AppUser");
     }
 
     @Test
     void getAllUsers() {
         UserItem userItem = mock(UserItem.class);
         when(userItem.getId()).thenReturn(UUID.randomUUID());
-        when(userItem.getUsername()).thenReturn("Test User");
+        when(userItem.getUsername()).thenReturn("Test AppUser");
 
         when(repository.findAllBy()).thenReturn(List.of(userItem));
 
         List<UserResponse> responses = service.getAllUsers();
         assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getUsername()).isEqualTo("Test User");
+        assertThat(responses.get(0).getUsername()).isEqualTo("Test AppUser");
     }
 
     @Test
@@ -61,18 +61,18 @@ class UserServiceTest {
         UserItem userItem = mock(UserItem.class);
         UUID userId = UUID.randomUUID();
         when(userItem.getId()).thenReturn(userId);
-        when(userItem.getUsername()).thenReturn("Test User");
+        when(userItem.getUsername()).thenReturn("Test AppUser");
 
         when(repository.getUserItemById(userId)).thenReturn(Optional.of(userItem));
 
         UserResponse response = service.getUserByUuid(userId);
 
-        assertThat(response.getUsername()).isEqualTo("Test User");
+        assertThat(response.getUsername()).isEqualTo("Test AppUser");
     }
 
     @Test
     void updateUserByUuid() {
-        User existing = new User();
+        AppUser existing = new AppUser();
         UUID userId = UUID.randomUUID();
         existing.setId(userId);
         existing.setUsername("Old Username");

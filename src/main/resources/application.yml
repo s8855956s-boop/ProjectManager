@@ -13,6 +13,7 @@ spring:
       enabled: true  # ????? H2 ? console ?????????? table
       path: '/h2' # ??? console ? URL ??
   jpa:
+    defer-datasource-initialization: true
     generate-ddl: false
     open-in-view: false
     hibernate:
