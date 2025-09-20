@@ -5,7 +5,7 @@
 - [2025-09-15](#2025-09-15)
 - [2025-09-16](#2025-09-16)
 - [2025-09-17](#2025-09-17)
-- [2025-09-18](#2025-09-18)
+- [2025-09-20](#2025-09-20)
 ## 2025-09-13
 - 初始化專案
 - 初始化Git
@@ -127,4 +127,46 @@ List<ProjectTask> findByAppUsers_Id(UUID userId);
 ````
 JPA會自己生成sql
 
-## 2025-09-18
+## 2025-09-20
+今天增加了三個API：
+1. 取得所有狀態資訊
+2. 變更專案任務狀態
+3. 指派任務給使用者
+
+在寫2跟3的時候有點不確定Restful API要怎麼寫，我知道要用PutMapping，因為本質上是修改，
+且專案任務(ProjectTask)跟專案狀態(ProjectStatus)不算是有主從關係，或相互依存，所以我決定這樣寫：
+````JAVA
+@PutMapping("/projectTasks/{uuid}/projectStatuses/{projectStatusId}")
+@Operation(summary = "修改狀態", description = "將uuid的projectTask 的狀態改為 id為projectStatusId的projectStatus")
+public void changeStatus(@PathVariable UUID uuid, @PathVariable UUID projectStatusId) {
+  service.changeStatus(uuid, projectStatusId);
+}
+````
+因為語意上是去改task的狀態，所以把projectStatuses放在前面。
+3也是一樣的想法：
+````JAVA
+    @PutMapping("/projectTasks/{uuid}/appUsers/{appUserId}")
+    @Operation(summary = "指派專案任務", description = "指派專案任務給特定使用者")
+    public void assignTask(@PathVariable UUID uuid, @PathVariable UUID appUserId) {
+        service.assignTask(uuid, appUserId);
+    }
+````
+還有改寫取得專案任務資訊的格式，直接改映射物件TaskItem，我把TaskItem改成向下面這樣：
+````JAVA
+public interface TaskItem {
+    UUID getId();
+    String getName();
+    /*---以下是新加上的程式片段---*/
+    StatusInfo getProjectStatus();//getProjectStatus()的ProjectStatus對應的是ProjectTask裡關聯的ProjectStatus欄位名稱
+
+    interface StatusInfo {//這裡的欄位就看要取ProjectStatus的哪個欄位就好
+        UUID getId();
+        String getName();
+    }
+    /*------------------------*/
+}
+````
+這樣幾乎就不用改太多，只是StatusInfo不能直接用BeanUtils.copyProperties()複製到我新的TaskResponse上，
+TaskResponse有多家StatusResponse來傳遞任務狀態資訊，必須再加上將StatusInfo傳進StatusResponse的程式，
+所以有用到TaskItem映射物件的地方都要改，否則不會有狀態資訊，我把TaskItem轉成TaskResponse的程式整合到一起
+放到TaskUtils裡面，就不用一改TaskItem就要改很多地方

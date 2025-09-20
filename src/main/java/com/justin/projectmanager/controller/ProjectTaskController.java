@@ -47,7 +47,7 @@ public class ProjectTaskController {
         service.deleteStatus(uuid);
     }
 
-    @PutMapping("/projectStatuses/{projectStatusId}/projectTasks/{uuid}")
+    @PutMapping("/projectTasks/{uuid}/projectStatuses/{projectStatusId}")
     @Operation(summary = "修改狀態", description = "將uuid的projectTask 的狀態改為 id為projectStatusId的projectStatus")
     public void changeStatus(@PathVariable UUID uuid, @PathVariable UUID projectStatusId) {
         service.changeStatus(uuid, projectStatusId);

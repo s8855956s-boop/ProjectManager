@@ -2,6 +2,7 @@ package com.justin.projectmanager.service;
 
 import com.justin.projectmanager.dto.TaskItem;
 import com.justin.projectmanager.dto.request.TaskRequest;
+import com.justin.projectmanager.dto.response.StatusResponse;
 import com.justin.projectmanager.dto.response.TaskResponse;
 import com.justin.projectmanager.entity.AppUser;
 import com.justin.projectmanager.entity.ProjectStatus;
@@ -10,6 +11,7 @@ import com.justin.projectmanager.repository.ProjectStatusRepository;
 import com.justin.projectmanager.repository.ProjectTaskRepository;
 import com.justin.projectmanager.repository.UserRepository;
 import com.justin.projectmanager.utils.BaseEntityUtils;
+import com.justin.projectmanager.utils.TaskUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,21 +45,13 @@ public class ProjectTaskService {
     public List<TaskResponse> getAllTasks() {
         List<TaskItem> taskItemList = repository.findAllBy();
 
-        return taskItemList.stream().map(item -> {
-            TaskResponse taskResponse = new TaskResponse();
-            BeanUtils.copyProperties(item, taskResponse);
-            return taskResponse;
-        }).toList();
+        return TaskUtils.transferTaskItemListToTaskResponse(taskItemList);
     }
 
     public List<TaskResponse> getTasksByStatusId(UUID projectStatusId) {
         List<TaskItem> taskItemList = repository.findAllByProjectStatusId(projectStatusId);
 
-        return taskItemList.stream().map(item -> {
-            TaskResponse taskResponse = new TaskResponse();
-            BeanUtils.copyProperties(item, taskResponse);
-            return taskResponse;
-        }).toList();
+        return TaskUtils.transferTaskItemListToTaskResponse(taskItemList);
     }
 
     public void updateProjectTask(TaskRequest taskRequest, UUID uuid) {

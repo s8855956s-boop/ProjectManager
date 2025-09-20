@@ -1,5 +1,6 @@
 package com.justin.projectmanager.service;
 
+import com.justin.projectmanager.dto.TaskItem;
 import com.justin.projectmanager.dto.UserItem;
 import com.justin.projectmanager.dto.request.UserRequest;
 import com.justin.projectmanager.dto.response.TaskResponse;
@@ -8,6 +9,7 @@ import com.justin.projectmanager.entity.AppUser;
 import com.justin.projectmanager.repository.ProjectTaskRepository;
 import com.justin.projectmanager.repository.UserRepository;
 import com.justin.projectmanager.utils.BaseEntityUtils;
+import com.justin.projectmanager.utils.TaskUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,11 +67,8 @@ public class UserService {
     }
 
     public List<TaskResponse> getUserTasks(UUID uuid) {
-        return projectTaskRepository.findByAppUsers_Id(uuid).stream()
-                .map(item -> {
-                    TaskResponse taskResponse = new TaskResponse();
-                    BeanUtils.copyProperties(item, taskResponse);
-                    return taskResponse;
-                }).toList();
+        List<TaskItem> taskItemList = projectTaskRepository.findByAppUsers_Id(uuid);
+
+        return TaskUtils.transferTaskItemListToTaskResponse(taskItemList);
     }
 }

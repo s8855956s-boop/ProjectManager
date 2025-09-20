@@ -11,4 +11,5 @@ import java.util.UUID;
 public class TaskResponse {
     private UUID id;
     private String name;
+    private StatusResponse status;
 }
