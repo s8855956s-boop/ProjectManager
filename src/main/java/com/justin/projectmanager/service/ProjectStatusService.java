@@ -7,6 +7,7 @@ import com.justin.projectmanager.entity.ProjectBoard;
 import com.justin.projectmanager.entity.ProjectStatus;
 import com.justin.projectmanager.repository.ProjectBoardRepository;
 import com.justin.projectmanager.repository.ProjectStatusRepository;
+import com.justin.projectmanager.utils.BaseEntityUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,22 @@ public class ProjectStatusService {
         ProjectStatus projectStatus = new ProjectStatus();
         projectStatus.setName(request.getName());
 
-        setAuditFields(projectStatus, true);
+        BaseEntityUtils.setAuditFields(projectStatus, true);
 
         projectBoard.addProjectStatus(projectStatus);
 
         projectBoardRepository.save(projectBoard);// 因為 cascade = ALL，projectStatus 會跟著存進去
+    }
+
+    public List<StatusResponse> getAllStatuses() {
+        List<StatusItem> statusItemList = repository.findAllBy();
+
+        //將Projection轉換為Response類別
+        return statusItemList.stream().map(item -> {
+            StatusResponse response = new StatusResponse();
+            BeanUtils.copyProperties(item, response);
+            return response;
+        }).toList();
     }
 
     public List<StatusResponse> getStatusesByBoardId(UUID projectBoardId) {
@@ -53,7 +65,7 @@ public class ProjectStatusService {
     public void updateStatus(StatusRequest request, UUID uuid) {
         ProjectStatus projectStatus = repository.findById(uuid).orElseThrow();
         projectStatus.setName(request.getName());
-        setAuditFields(projectStatus, false);
+        BaseEntityUtils.setAuditFields(projectStatus, false);
 
         repository.save(projectStatus);
     }
@@ -66,15 +78,5 @@ public class ProjectStatusService {
         } else {
             throw new NoSuchElementException();
         }
-    }
-
-    private void setAuditFields(ProjectStatus projectStatus, boolean isNew) {
-        LocalDateTime now = LocalDateTime.now();
-        if (isNew) {
-            projectStatus.setCreateDate(now);
-            projectStatus.setCreateUser("NotSet");
-        }
-        projectStatus.setModifyDate(now);
-        projectStatus.setModifyUser("NotSet");
     }
 }

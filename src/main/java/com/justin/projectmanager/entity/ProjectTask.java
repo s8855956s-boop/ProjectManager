@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,5 +29,5 @@ public class ProjectTask extends BaseEntity {
     private ProjectStatus projectStatus;
 
     @ManyToMany(mappedBy = "projectTasks")
-    private Set<AppUser> appUsers;
+    private Set<AppUser> appUsers = new HashSet<>();
 }

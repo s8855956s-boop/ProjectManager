@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,5 +30,5 @@ public class AppUser extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id"),  // 對應到 AppUser
             inverseJoinColumns = @JoinColumn(name = "task_id") // 對應到 ProjectTask
     )
-    private Set<ProjectTask> projectTasks;
+    private Set<ProjectTask> projectTasks = new HashSet<>();
 }

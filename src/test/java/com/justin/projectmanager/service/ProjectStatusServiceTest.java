@@ -54,6 +54,21 @@ public class ProjectStatusServiceTest {
     }
 
     @Test
+    void getAllStatuses() {
+        UUID projectStatusId   = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+        StatusItem statusItem = mock(StatusItem.class);
+        when(statusItem.getId()).thenReturn(projectStatusId);
+        when(statusItem.getName()).thenReturn("Test Status");
+        when(repository.findAllBy()).thenReturn(List.of(statusItem));
+
+        List<StatusResponse> responses = service.getAllStatuses();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getName()).isEqualTo("Test Status");
+    }
+
+    @Test
     void getStatusesByBoardId() {
 
         UUID projectStatusId   = UUID.fromString("11111111-1111-1111-1111-111111111111");

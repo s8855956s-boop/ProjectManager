@@ -12,10 +12,10 @@
 ---
 
 ## 📅 第 2 個月：API 與測試
-- [ ] 擴充更多 API（例如 Task、User 與 Board 的關聯）
-- [ ] 學習並實作 DTO / Request / Response 分層
-- [ ] 加上 JUnit / Spring Boot Test，學會怎麼寫單元測試
-- [ ] 整合 Swagger/OpenAPI，讓 API 有文件可看
+- [x] 擴充更多 API（例如 Task、User 與 Board 的關聯）
+- [x] 學習並實作 DTO / Request / Response 分層
+- [x] 加上 JUnit / Spring Boot Test，學會怎麼寫單元測試
+- [x] 整合 Swagger/OpenAPI，讓 API 有文件可看
 
 🎯 成果：一組清晰的 REST API，並且能跑測試驗證
 

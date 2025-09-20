@@ -3,8 +3,12 @@ package com.justin.projectmanager.service;
 import com.justin.projectmanager.dto.TaskItem;
 import com.justin.projectmanager.dto.request.TaskRequest;
 import com.justin.projectmanager.dto.response.TaskResponse;
+import com.justin.projectmanager.entity.AppUser;
+import com.justin.projectmanager.entity.ProjectStatus;
 import com.justin.projectmanager.entity.ProjectTask;
+import com.justin.projectmanager.repository.ProjectStatusRepository;
 import com.justin.projectmanager.repository.ProjectTaskRepository;
+import com.justin.projectmanager.repository.UserRepository;
 import com.justin.projectmanager.service.ProjectTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +32,12 @@ class ProjectTaskServiceTest {
 
     @Mock
     private ProjectTaskRepository repository;
+
+    @Mock
+    private ProjectStatusRepository projectStatusRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private ProjectTaskService service;
@@ -108,5 +118,59 @@ class ProjectTaskServiceTest {
         verify(repository, never()).deleteById(id);
 
         assertThrows(NoSuchElementException.class, () -> service.deleteStatus(id));
+    }
+
+    @Test
+    void changeStatus() {
+        UUID uuid = UUID.randomUUID();
+        UUID oldProjectStatusId = UUID.randomUUID();
+        UUID newProjectStatusId = UUID.randomUUID();
+        ProjectStatus oldProjectStatus = new ProjectStatus();
+        oldProjectStatus.setId(oldProjectStatusId);
+        oldProjectStatus.setName("Test Old Task");
+
+        ProjectTask projectTask = new ProjectTask();
+        projectTask.setId(uuid);
+        projectTask.setName("Test Task");
+        projectTask.setProjectStatus(oldProjectStatus);
+        oldProjectStatus.getTasks().add(projectTask);
+
+        when(repository.findById(uuid)).thenReturn(Optional.of(projectTask));
+
+        ProjectStatus newProjectStatus = new ProjectStatus();
+        newProjectStatus.setId(newProjectStatusId);
+        newProjectStatus.setName("Test New Status");
+
+        when(projectStatusRepository.findById(newProjectStatusId)).thenReturn(Optional.of(newProjectStatus));
+
+        service.changeStatus(uuid, newProjectStatusId);
+
+        assertThat(projectTask.getProjectStatus().getName()).isEqualTo("Test New Status");
+        assertThat(oldProjectStatus.getTasks()).isEmpty();
+        assertThat(newProjectStatus.getTasks()).hasSize(1);
+        assertThat(newProjectStatus.getTasks().get(0).getName()).isEqualTo("Test Task");
+    }
+
+    @Test
+    void assignTask() {
+        UUID uuid = UUID.randomUUID();
+        UUID userUuid = UUID.randomUUID();
+        ProjectTask projectTask = new ProjectTask();
+        projectTask.setId(uuid);
+        projectTask.setName("Test Task");
+
+        AppUser user = new AppUser();
+        user.setId(userUuid);
+        user.setUsername("TestUser");
+
+        when(repository.findById(uuid)).thenReturn(Optional.of(projectTask));
+        when(userRepository.findById(userUuid)).thenReturn(Optional.of(user));
+
+        service.assignTask(uuid, userUuid);
+
+        assertThat(projectTask.getAppUsers()).hasSize(1);
+        assertThat(projectTask.getAppUsers().stream().findFirst().get().getUsername()).isEqualTo("TestUser");
+        assertThat(user.getProjectTasks()).hasSize(1);
+        assertThat(user.getProjectTasks().stream().findFirst().get().getName()).isEqualTo("Test Task");
     }
 }

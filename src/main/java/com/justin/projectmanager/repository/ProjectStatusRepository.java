@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectStatusRepository extends JpaRepository<ProjectStatus, UUID> {
+    List<StatusItem> findAllBy();
     List<StatusItem> getStatusItemByProjectBoardId(UUID projectBoardId);
     List<ProjectStatus> findByProjectBoardId(UUID projectBoardId);
 }

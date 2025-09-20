@@ -7,6 +7,7 @@ import com.justin.projectmanager.dto.response.UserResponse;
 import com.justin.projectmanager.entity.AppUser;
 import com.justin.projectmanager.repository.ProjectTaskRepository;
 import com.justin.projectmanager.repository.UserRepository;
+import com.justin.projectmanager.utils.BaseEntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class UserService {
         AppUser appUser = new AppUser();
         BeanUtils.copyProperties(request, appUser);
 
-        setAuditFields(appUser, true);
+        BaseEntityUtils.setAuditFields(appUser, true);
         repository.save(appUser);
     }
 
@@ -51,7 +52,7 @@ public class UserService {
         AppUser appUser = repository.findById(uuid).orElseThrow();
         BeanUtils.copyProperties(request, appUser);
 
-        setAuditFields(appUser, false);
+        BaseEntityUtils.setAuditFields(appUser, false);
         repository.save(appUser);
     }
 
@@ -70,15 +71,5 @@ public class UserService {
                     BeanUtils.copyProperties(item, taskResponse);
                     return taskResponse;
                 }).toList();
-    }
-
-    private void setAuditFields(AppUser appUser, boolean isNew) {
-        LocalDateTime now = LocalDateTime.now();
-        if (isNew) {
-            appUser.setCreateDate(now);
-            appUser.setCreateUser("NotSet");
-        }
-        appUser.setModifyDate(now);
-        appUser.setModifyUser("NotSet");
     }
 }

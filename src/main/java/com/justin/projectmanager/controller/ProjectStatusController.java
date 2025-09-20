@@ -23,6 +23,12 @@ public class ProjectStatusController {
         service.createProjectStatus(request, projectBoardId);
     }
 
+    @GetMapping("/projectStatuses")
+    @Operation(summary = "取得所有專案狀態", description = "取得所有專案狀態")
+    public List<StatusResponse> getAllStatuses() {
+        return service.getAllStatuses();
+    }
+
     @GetMapping("/projectBoards/{projectBoardId}/projectStatuses")
     @Operation(summary = "取得專案狀態", description = "根據 projectBoardId 取得一個專案看板底下所有的專案狀態")
     public List<StatusResponse> getStatusesByBoardId(@PathVariable UUID projectBoardId) {

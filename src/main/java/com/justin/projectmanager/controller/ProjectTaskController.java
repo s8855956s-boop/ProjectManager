@@ -29,7 +29,7 @@ public class ProjectTaskController {
         return service.getAllTasks();
     }
 
-    @GetMapping("projectStatuses/{projectStatusId}/projectTasks")
+    @GetMapping("/projectStatuses/{projectStatusId}/projectTasks")
     @Operation(summary = "取得專案狀態id=projectStatusId底下的所有專案任務", description = "取得專案狀態id=projectStatusId底下的所有專案任務")
     public List<TaskResponse> getTasksByStatusId(@PathVariable UUID projectStatusId) {
         return service.getTasksByStatusId(projectStatusId);
@@ -41,9 +41,21 @@ public class ProjectTaskController {
         service.updateProjectTask(request, uuid);
     }
 
-    @DeleteMapping("projectTasks/{uuid}")
+    @DeleteMapping("/projectTasks/{uuid}")
     @Operation(summary = "刪除專案任務", description = "根據 uuid 刪除專案任務")
     public void deleteStatus(@PathVariable UUID uuid) {
         service.deleteStatus(uuid);
+    }
+
+    @PutMapping("/projectStatuses/{projectStatusId}/projectTasks/{uuid}")
+    @Operation(summary = "修改狀態", description = "將uuid的projectTask 的狀態改為 id為projectStatusId的projectStatus")
+    public void changeStatus(@PathVariable UUID uuid, @PathVariable UUID projectStatusId) {
+        service.changeStatus(uuid, projectStatusId);
+    }
+
+    @PutMapping("/projectTasks/{uuid}/appUsers/{appUserId}")
+    @Operation(summary = "指派專案任務", description = "指派專案任務給特定使用者")
+    public void assignTask(@PathVariable UUID uuid, @PathVariable UUID appUserId) {
+        service.assignTask(uuid, appUserId);
     }
 }

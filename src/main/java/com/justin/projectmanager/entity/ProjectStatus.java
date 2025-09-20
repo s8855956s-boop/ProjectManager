@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +25,8 @@ public class ProjectStatus extends BaseEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "projectStatus")
-    private List<ProjectTask> tasks;
+    @OneToMany(mappedBy = "projectStatus", cascade = CascadeType.ALL)
+    private List<ProjectTask> tasks = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "project_board_id")

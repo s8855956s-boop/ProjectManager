@@ -5,8 +5,11 @@ import com.justin.projectmanager.dto.request.BoardRequest;
 import com.justin.projectmanager.dto.response.BoardResponse;
 import com.justin.projectmanager.entity.ProjectBoard;
 import com.justin.projectmanager.entity.ProjectStatus;
+import com.justin.projectmanager.entity.ProjectTask;
 import com.justin.projectmanager.repository.ProjectBoardRepository;
 import com.justin.projectmanager.repository.ProjectStatusRepository;
+import com.justin.projectmanager.repository.ProjectTaskRepository;
+import com.justin.projectmanager.utils.BaseEntityUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -27,11 +30,14 @@ public class ProjectBoardService {
     @Autowired
     ProjectStatusRepository projectStatusRepository;
 
+    @Autowired
+    ProjectTaskRepository projectTaskRepository;
+
     public void createProjectBoard(BoardRequest request) {
         ProjectBoard projectBoard = new ProjectBoard();
         projectBoard.setName(request.getName());
 
-        setAuditFields(projectBoard, true);
+        BaseEntityUtils.setAuditFields(projectBoard, true);
         repository.save(projectBoard);
     }
 
@@ -57,7 +63,7 @@ public class ProjectBoardService {
         ProjectBoard projectBoard = repository.findById(uuid).orElseThrow();
         projectBoard.setName(request.getName());
 
-        setAuditFields(projectBoard, false);
+        BaseEntityUtils.setAuditFields(projectBoard, false);
         repository.save(projectBoard);
     }
 
@@ -65,21 +71,17 @@ public class ProjectBoardService {
     public void deleteBoard(UUID uuid) {
         if (repository.existsById(uuid)) {
             List<ProjectStatus> statuses = projectStatusRepository.findByProjectBoardId(uuid);
-            statuses.forEach(status -> status.getTasks().clear());
+            for (ProjectStatus status : statuses) {
+                List<ProjectTask> tasks = status.getTasks();
+                tasks.forEach(task -> task.setProjectStatus(null));
+                status.getTasks().clear();
+            }
+
+            projectStatusRepository.saveAllAndFlush(statuses);
 
             repository.deleteById(uuid);
         } else {
             throw new NoSuchElementException();
         }
-    }
-
-    private void setAuditFields(ProjectBoard projectBoard, boolean isNew) {
-        LocalDateTime now = LocalDateTime.now();
-        if (isNew) {
-            projectBoard.setCreateDate(now);
-            projectBoard.setCreateUser("NotSet");
-        }
-        projectBoard.setModifyDate(now);
-        projectBoard.setModifyUser("NotSet");
     }
 }

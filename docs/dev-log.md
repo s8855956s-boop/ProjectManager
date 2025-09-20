@@ -2,7 +2,10 @@
 目錄
 - [2025-09-13](#2025-09-13)
 - [2025-09-14](#2025-09-14)
-- [2025-09-14](#2025-09-15)
+- [2025-09-15](#2025-09-15)
+- [2025-09-16](#2025-09-16)
+- [2025-09-17](#2025-09-17)
+- [2025-09-18](#2025-09-18)
 ## 2025-09-13
 - 初始化專案
 - 初始化Git
@@ -86,4 +89,42 @@ Optional<UserItem> getUserItemById(@Param("id") UUID id);
 在API上面加上 @Operation(summary = "API功能", description = "詳細描述")也會顯示
 在網頁上，預設的網址是http://localhost:8080/swagger-ui/index.html
 
-今天也有建假資料，我現在用的是H2資料庫，是用Memory存資料的，在resources裡建一個data.sql他就會跑了
+今天也有建假資料，我現在用的是H2資料庫，是用Memory存資料的，在resources裡建一個data.sql他就會跑了。
+然後我忘記怎麼定義Entity在資料庫裡的名字，查了後知道是@Table(name = \"資料庫Table名稱\")。
+
+在建假資料的時候我不知道要怎麼將ProjectStatus與ProjectBoard關聯，查後知道sql要這樣寫：
+```SQL
+INSERT INTO PROJECT_STATUS (id, name, project_board_id (-- entity裡有定義ProjectBoard projectBoard欄位上面有加annotation: @JoingColumn("project_board_id"))) VALUES(RANDOM_UUID(), 'DONE', 要關聯的boardId);
+projectBoard不用特別設定
+```
+
+Sql寫完後啟動遇到這個問題：
+
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT_BOARD" not found (this database is empty); SQL statement:
+INSERT INTO PROJECT_BOARD (id, name) VALUES (RANDOM_UUID(), 'Board A') [42104-232]
+
+yml加這個就好了：spring.jpa.defer-datasource-initialization=true
+
+在第一次createStatus的時候出現下面的錯誤
+org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.justin.projectmanager.entity.ProjectBoard.projectStatuses: could not initialize proxy - no Session
+
+查了之後知道關聯的Table的預設FetchType是lazy fetch，代表不會真的把關聯得表查出來，除非
+session還在，否則若取直接從Table.get關聯table就會出這個錯，在function加上@Transactional
+就會保證session在function執行中會一直存在解決了這個錯誤。
+
+ManyToMany的關聯要建立中介表，以user跟task為例：
+這是user_task中介表，代表這兩個id的user和task相互關聯
+INSERT INTO user_task (user_id, task_id) VALUES ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222');
+
+另外我想找userId底下的所有task時不知道JPA可以怎麼寫，後來知道可以在taskRepository底下加
+````JAVA
+List<ProjectTask> findByAppUsers_Id(UUID userId);
+````
+因為Task Entity有
+````JAVA
+    @ManyToMany(mappedBy = "projectTasks")
+    private Set<AppUser> appUsers;
+````
+JPA會自己生成sql
+
+## 2025-09-18
